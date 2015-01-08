@@ -31,19 +31,29 @@ function Filter(options) {
 Filter.prototype.filter = function filter(query, restrict) {
   if ('object' !== typeof query) return query;
 
-  var groups = this.groups(restrict)
-    , filter = this;
+  var groups = this.groups(restrict);
+
+  /**
+   * Create iterater.
+   *
+   * @param {String} key Operator.
+   * @return {Function} Iterater against the key.
+   * @api private
+   */
+  function iterate(context, key) {
+    return function each(group) {
+      if (!~context[group].indexOf(key)) delete query[key];
+    }
+  }
 
   for (var key in query) {
     if ('$' !== key[0]) continue;
     if ('object' === typeof query[key]) {
-      this.parse(query[key]);
+      this.filter(query[key]);
       continue;
     }
 
-    groups.forEach(function each(group) {
-      if (!~filter[group].indexOf(key)) delete query[key];
-    });
+    groups.forEach(iterate(this, key));
   }
 
   return query;
