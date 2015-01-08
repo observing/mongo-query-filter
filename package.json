@@ -1,24 +1,35 @@
 {
-  "name": "mongo-operators",
-  "version": "1.0.0",
-  "description": "Filter keys from MongoDB queries",
+  "name": "mongo-query-filter",
+  "version": "0.0.0",
+  "description": "Filter operators from MongoDB queries",
   "main": "index.js",
   "scripts": {
-    "test": "mocha $(find test -name '*.test.js')"
+    "test": "mocha $(find test -name '*.test.js')",
+    "watch": "mocha --watch $(find test -name '*.test.js')",
+    "coverage": "istanbul cover ./node_modules/.bin/_mocha -- $(find test -name '*.test.js')",
+    "test-travis": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- $(find test -name '*.test.js')"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:observing/mongo-operators.git"
   },
+  "devDependencies": {
+    "assume": "0.0.x",
+    "istanbul": "0.3.x",
+    "mocha": "2.1.x",
+    "pre-commit": "0.0.x"
+  },
   "keywords": [
     "MongoDB",
     "operators",
+    "sanitize",
     "filter",
     "query",
     "queries",
     "parse",
     "restrict",
-    "limit"
+    "limit",
+    "reduce"
   ],
   "author": "Martijn Swaagman",
   "license": "MIT",
