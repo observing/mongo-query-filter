@@ -1,0 +1,29 @@
+{
+  "name": "mongo-operators",
+  "version": "1.0.0",
+  "description": "Filter keys from MongoDB queries",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha $(find test -name '*.test.js')"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:observing/mongo-operators.git"
+  },
+  "keywords": [
+    "MongoDB",
+    "operators",
+    "filter",
+    "query",
+    "queries",
+    "parse",
+    "restrict",
+    "limit"
+  ],
+  "author": "Martijn Swaagman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/observing/mongo-operators/issues"
+  },
+  "homepage": "https://github.com/observing/mongo-operators"
+}

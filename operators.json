@@ -1,0 +1,36 @@
+{
+  "PROJECTION": "$,$elemMatch,$meta,$slice",
+  "QUERY": {
+    "COMPARISON": "$gt,$gte,$in,$lt,$lte,$ne,$nin",
+    "LOGICAL": "$and,$nor,$not,$or",
+    "ELEMENT": "$exists,$type",
+    "EVALUATION": "$mod,$regex,$text,$where",
+    "GEOSPATIAL": "$geoIntersects,$geoWithin,$nearSphere,$near",
+    "ARRAY": "$all,$elemMatch,$size",
+    "COMMENT": "$comment",
+    "MODIFIERS": "$comment,$explain,$hint,$maxScan,$maxTimeMS,$max,$min,$orderby,$query,$returnKey,$showDiskLoc,$snapshot",
+    "SORT": "$natural"
+  },
+  "UPDATE": {
+    "FIELDS": "$currentDate,$inc,$max,$min,$mul,$rename,$setOnInsert,$set,$unset",
+    "OPERATORS": "$,$addToSet,$pop,$pullAll,$pull,$pushAll,$push",
+    "MODIFIERS": "$each,$position,$slice,$sort",
+    "BITWISE": "$bit",
+    "ISOLATION": "$isolated"
+  },
+  "PIPELINE": {
+    "STAGE": "$geoNear,$group,$limit,$match,$out,$project,$redact,$skip,$sort,$unwind",
+    "BOOLEAN": "$and,$not,$or",
+    "SET": "$allElementsTrue,$anyElementTrue,$setDifference,$setEquals,$setIntersection,$setIsSubset,$setUnion",
+    "COMPARISON": "$cmp,$eq,$gt,$gte,$lt,$lte,$ne",
+    "ARITHMETIC": "$add,$divide,$mod,$multiply,$subtract",
+    "STRING": "$concat,$strcasecmp,$substr,$toLower,$toUpper",
+    "TEXT": "$meta",
+    "ARRAY": "$size",
+    "VARIABLE": "$let,$map",
+    "LITERAL": "$literal",
+    "DATE": "$dayOfMonth,$dayOfWeek,$dayOfYear,$hour,$millisecond,$minute,$month,$second,$week,$year",
+    "CONDITIONAL": "$cond,$ifNull",
+    "ACCUMULATORS": "$addToSet,$avg,$first,$last,$max,$min,$push,$sum"
+  }
+}
