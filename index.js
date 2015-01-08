@@ -1,6 +1,7 @@
 'use strict';
 
-var operators = require('./operators');
+var operators = require('./operators')
+  , custom = ['ALL'];
 
 /**
  * Strip MongoDB operators from user provided objects.
@@ -9,7 +10,7 @@ var operators = require('./operators');
  * @param {Object} options
  * @api public
  */
-function Operator(options) {
+function Filter(options) {
   this.options = options || {};
 
   for (var group in operators) {
@@ -27,20 +28,22 @@ function Operator(options) {
  * @return {Object} Filtered query object.
  * @api public
  */
-Operator.prototype.filter = function filter(query, restrict) {
+Filter.prototype.filter = function filter(query, restrict) {
   if ('object' !== typeof query) return query;
 
-  var map = this.groups(restrict);
+  var groups = this.groups(restrict)
+    , filter = this;
 
   for (var key in query) {
+    if ('$' !== key[0]) continue;
     if ('object' === typeof query[key]) {
       this.parse(query[key]);
       continue;
     }
 
-    for (var group in map) {
-      if (!~this[group].indexOf(key)) delete query[key];
-    }
+    groups.forEach(function each(group) {
+      if (!~filter[group].indexOf(key)) delete query[key];
+    });
   }
 
   return query;
@@ -54,12 +57,13 @@ Operator.prototype.filter = function filter(query, restrict) {
  * @returns {Array} set of allowed operators.
  * @api public
  */
-Operator.prototype.mask = function mask(group, bitmask) {
+Filter.prototype.mask = function mask(group, bitmask) {
   if (!group || !bitmask) return [];
   var stack = '';
 
   for (var key in operators[group]) {
-    if (key !== 'ALL' && Operator[group][key] & bitmask) {
+    if (~custom.indexOf(key)) continue;
+    if (Filter[group][key] & bitmask) {
       stack += operators[group][key];
     }
   }
@@ -75,13 +79,15 @@ Operator.prototype.mask = function mask(group, bitmask) {
  * @return {Array} Set of group names.
  * @api public
  */
-Operator.prototype.groups = function groups(restrict) {
-  var operator = this;
+Filter.prototype.groups = function groups(restrict) {
+  var filter = this;
 
   return Object.keys(operators).map(function lowercase(group) {
     group = group.toLowerCase();
-    if (operator[group].length && group === restrict) return group;
-  }).filter(Boolean);
+    if (filter[group].length) return group;
+  }).filter(function filter(group) {
+    return restrict ? group === restrict : group;
+  });
 };
 
 /**
@@ -92,7 +98,7 @@ Operator.prototype.groups = function groups(restrict) {
  * @return {Boolean}
  * @api public
  */
-Operator.prototype.allowed = function allowed(group, key) {
+Filter.prototype.allowed = function allowed(group, key) {
   key += key[0] !== '$' ? '$' : '';
   return !!~this[group].indexOf(key);
 };
@@ -103,16 +109,16 @@ Operator.prototype.allowed = function allowed(group, key) {
 for (var group in operators) {
   var i = 0;
 
-  if ('object' !== typeof operators[group]) Operator[group] = 1 << i++;
+  if ('object' !== typeof operators[group]) Filter[group] = 1 << i++;
   else for (var key in operators[group]) {
-    Operator[group] = Operator[group] || Object.create(null);
-    Operator[group][key] = 1 << i++;
+    Filter[group] = Filter[group] || Object.create(null);
+    Filter[group][key] = 1 << i++;
   }
 
-  Operator[group].ALL = (1 << i) - 1;
+  Filter[group].ALL = (1 << i) - 1;
 }
 
 //
 // Expose the module.
 //
-module.exports = Operator;
+module.exports = Filter;
