@@ -1,7 +1,6 @@
 'use strict';
 
-var operators = require('./operators')
-  , custom = ['ALL'];
+var operators = require('./operators');
 
 /**
  * Strip MongoDB operators from user provided objects.
@@ -31,32 +30,24 @@ function Filter(options) {
 Filter.prototype.filter = function filter(query, restrict) {
   if ('object' !== typeof query) return query;
 
-  var groups = this.groups(restrict);
+  var groups = this.groups(restrict)
+    , array = Array.isArray(query)
+    , self = this;
 
-  /**
-   * Create iterater.
-   *
-   * @param {String} key Operator.
-   * @return {Function} Iterater against the key.
-   * @api private
-   */
-  function iterate(context, key) {
-    return function each(group) {
-      if (!~context[group].indexOf(key)) delete query[key];
-    }
-  }
-
-  for (var key in query) {
-    if ('$' !== key[0]) continue;
-    if ('object' === typeof query[key]) {
-      this.filter(query[key]);
-      continue;
+  (array ? query : Object.keys(query)).forEach(function each(key) {
+    if ('object' === typeof key || 'object' === typeof query[key]) {
+      query[key] = self.filter(array ? key : query[key], restrict);
     }
 
-    groups.forEach(iterate(this, key));
-  }
+    if ('$' !== key[0]) return key;
+    groups.forEach(function each(group) {
+      if (!self.allowed(group, key)) delete query[key];
+    });
+  });
 
-  return query;
+  return array
+    ? query.filter(function (v) { return v && Object.keys(v).length; })
+    : query;
 };
 
 /**
@@ -69,16 +60,16 @@ Filter.prototype.filter = function filter(query, restrict) {
  */
 Filter.prototype.mask = function mask(group, bitmask) {
   if (!group || !bitmask) return [];
-  var stack = '';
+  group = group.toUpperCase();
 
+  var stack = [];
   for (var key in operators[group]) {
-    if (~custom.indexOf(key)) continue;
     if (Filter[group][key] & bitmask) {
-      stack += operators[group][key];
+      stack.push(operators[group][key]);
     }
   }
 
-  return stack.split(',');
+  return stack.join(',').split(',');
 };
 
 /**
@@ -109,8 +100,8 @@ Filter.prototype.groups = function groups(restrict) {
  * @api public
  */
 Filter.prototype.allowed = function allowed(group, key) {
-  key += key[0] !== '$' ? '$' : '';
-  return !!~this[group].indexOf(key);
+  key = key[0] !== '$' ? '$'+ key : key;
+  return !!(this[group] && ~this[group].indexOf(key));
 };
 
 //
