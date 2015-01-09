@@ -1,6 +1,6 @@
 {
   "name": "mongo-query-filter",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Filter operators from MongoDB queries",
   "main": "index.js",
   "scripts": {
